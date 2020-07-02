@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { render } from 'react-dom';
 import datas from './assets/timezone.json';
+import countries from './assets/countries.json';
+import cityTimeZones from 'city-timezones';
 
 function offsetToTime(offset) {
 	let date = new Date();
@@ -12,15 +14,38 @@ function offsetToTime(offset) {
 function timezoneToTime() {
 	const res = [];
 
+	// console.log(datas);
+
 	datas.forEach((data, index) => {
-		res.push({
-			id: index,
-			utc: data.utc,
-			time: offsetToTime(data.offset),
-		});
+		const utc = convertUtc(data.utc);
+
+		if (Array.isArray(utc) && utc.length > 0) {
+			res.push({
+				id: index,
+				utc,
+				time: offsetToTime(data.offset),
+			});
+		}
 	});
 
 	return res;
+}
+
+function convertUtc(utc) {
+	utc = utc
+		.filter((item) => item.includes('/') && !item.includes('Etc'))
+		.map((item) => {
+			const name = item.split('/')[1];
+			const code = setCountryCode(name);
+
+			if (Array.isArray(code) && code.length > 0) return { name, code };
+		});
+
+	return utc;
+}
+
+function setCountryCode(utc) {
+	return cityTimeZones.lookupViaCity(utc);
 }
 
 function Clock({ data }) {
@@ -31,15 +56,17 @@ function App() {
 	// const times = timezoneToTime();
 	const [times, setTimes] = useState(timezoneToTime());
 
-	useEffect(() => {
-		setInterval(() => {
-			const timer = setTimes(timezoneToTime());
+	console.log(times);
 
-			return function () {
-				clearInterval(timer);
-			};
-		}, 1000);
-	}, []);
+	// useEffect(() => {
+	// 	setInterval(() => {
+	// 		const timer = setTimes(timezoneToTime());
+
+	// 		return function () {
+	// 			clearInterval(timer);
+	// 		};
+	// 	}, 1000);
+	// }, []);
 
 	return (
 		<>
