@@ -11,10 +11,16 @@ function offsetToTime(offset) {
 	return date.toLocaleTimeString('fr-FR');
 }
 
-function timezoneToTime() {
-	const res = [];
+function timezoneToTime(data) {
+	data.forEach((item) => {
+		item.time = offsetToTime(item.offset);
+	});
 
-	// console.log(datas);
+	return data;
+}
+
+function convertTimezone() {
+	const res = [];
 
 	datas.forEach((data, index) => {
 		const utc = convertUtc(data.utc);
@@ -23,7 +29,7 @@ function timezoneToTime() {
 			res.push({
 				id: index,
 				utc,
-				time: offsetToTime(data.offset),
+				offset: data.offset,
 			});
 		}
 	});
@@ -34,11 +40,21 @@ function timezoneToTime() {
 function convertUtc(utc) {
 	utc = utc
 		.filter((item) => item.includes('/') && !item.includes('Etc'))
+		.filter((item) => {
+			const name = item.split('/')[1];
+			const code = setCountryCode(name);
+
+			if (Array.isArray(code) && code.length > 0) {
+				return item;
+			}
+		})
 		.map((item) => {
 			const name = item.split('/')[1];
 			const code = setCountryCode(name);
 
-			if (Array.isArray(code) && code.length > 0) return { name, code };
+			if (Array.isArray(code) && code.length > 0) {
+				return { name, code };
+			}
 		});
 
 	return utc;
@@ -53,20 +69,18 @@ function Clock({ data }) {
 }
 
 function App() {
-	// const times = timezoneToTime();
-	const [times, setTimes] = useState(timezoneToTime());
+	const [clocks, setClocks] = useState(convertTimezone());
+	const [times, setTimes] = useState(timezoneToTime(clocks));
 
-	console.log(times);
+	useEffect(() => {
+		setInterval(() => {
+			const timer = setTimes(timezoneToTime(clocks));
 
-	// useEffect(() => {
-	// 	setInterval(() => {
-	// 		const timer = setTimes(timezoneToTime());
-
-	// 		return function () {
-	// 			clearInterval(timer);
-	// 		};
-	// 	}, 1000);
-	// }, []);
+			return function () {
+				clearInterval(timer);
+			};
+		}, 1000);
+	}, []);
 
 	return (
 		<>
