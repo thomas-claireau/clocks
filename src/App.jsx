@@ -38,14 +38,15 @@ function convertTimezone() {
 }
 
 function convertUtc(utc) {
-	utc = utc
-		.filter((item) => item.includes('/') && !item.includes('Etc'))
+	return utc
 		.filter((item) => {
-			const name = item.split('/')[1];
-			const code = setCountryCode(name);
+			if (item.includes('/') && !item.includes('Etc')) {
+				const name = item.split('/')[1];
+				const code = setCountryCode(name);
 
-			if (Array.isArray(code) && code.length > 0) {
-				return item;
+				if (Array.isArray(code) && code.length > 0) {
+					return item;
+				}
 			}
 		})
 		.map((item) => {
@@ -56,8 +57,6 @@ function convertUtc(utc) {
 				return { name, code };
 			}
 		});
-
-	return utc;
 }
 
 function setCountryCode(utc) {
