@@ -24,18 +24,23 @@ function timezoneToTime(data) {
 
 function convertTimezone() {
 	const res = [];
+	const names = [];
 
 	datas.forEach((data, index) => {
 		const utc = convertUtc(data.utc);
 
-		if (index == 10) console.log(data);
-
 		if (Array.isArray(utc) && utc.length > 0) {
-			res.push({
-				id: index,
-				utc,
-				offset: data.offset,
-				time: null,
+			utc.forEach((item) => {
+				if (!names.includes(item.name)) {
+					names.push(item.name);
+
+					res.push({
+						id: index,
+						name: item,
+						offset: data.offset,
+						time: null,
+					});
+				}
 			});
 		}
 	});
@@ -70,7 +75,7 @@ function setCountryCode(utc) {
 }
 
 function Clock({ data }) {
-	return <div className="clock">{data.time}</div>;
+	return <div className={`clock ${data.name.name}`}>{data.time}</div>;
 }
 
 function App() {
@@ -90,9 +95,10 @@ function App() {
 		<>
 			<div className="search"></div>
 			<div className="clocks">
-				{times.map((time, index) => {
-					return <Clock key={time.id} data={time} />;
+				{times.map((time) => {
+					return <Clock key={time.name.name} data={time} />;
 				})}
+				{/* <Clock key={times[0].id} data={times[0]} /> */}
 			</div>
 		</>
 	);
