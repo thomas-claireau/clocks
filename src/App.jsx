@@ -1,107 +1,60 @@
 import React, { useState, useEffect } from 'react';
 import { render } from 'react-dom';
-import datas from './assets/timezone.json';
-import countries from './assets/countries.json';
-import cityTimeZones from 'city-timezones';
+import timezones from './assets/timezone.json';
+import shuffle from 'lodash.shuffle';
 require('dotenv').config();
 
-function offsetToTime(offset) {
-	let date = new Date();
-	date = new Date(date.setHours(date.getHours() + offset));
+// Utils
+import { timezoneToTime, convertTimezone } from './utils';
 
-	return date.toLocaleTimeString('fr-FR');
-}
-
-function timezoneToTime(data) {
-	data = [...data];
-
-	data.forEach((item, key) => {
-		item.time = offsetToTime(item.offset);
-	});
-
-	return data;
-}
-
-function convertTimezone() {
-	const res = [];
-	const names = [];
-
-	datas.forEach((data, index) => {
-		const utc = convertUtc(data.utc);
-
-		if (Array.isArray(utc) && utc.length > 0) {
-			utc.forEach((item) => {
-				if (!names.includes(item.name)) {
-					names.push(item.name);
-
-					res.push({
-						id: index,
-						name: item,
-						offset: data.offset,
-						time: null,
-					});
-				}
-			});
-		}
-	});
-
-	return res;
-}
-
-function convertUtc(utc) {
-	return utc
-		.filter((item) => {
-			if (item.includes('/') && !item.includes('Etc')) {
-				const name = item.split('/')[1];
-				const code = setCountryCode(name);
-
-				if (Array.isArray(code) && code.length > 0) {
-					return item;
-				}
-			}
-		})
-		.map((item) => {
-			const name = item.split('/')[1];
-			const code = setCountryCode(name);
-
-			if (Array.isArray(code) && code.length > 0) {
-				return { name, code };
-			}
-		});
-}
-
-function setCountryCode(utc) {
-	return cityTimeZones.lookupViaCity(utc);
-}
-
-function Clock({ data }) {
-	return <div className={`clock ${data.name.name}`}>{data.time}</div>;
-}
+// Components
+import { Clock } from './components/Clock';
+import { LoadMore } from './components/LoadMore';
+import { Search } from './components/Search';
 
 function App() {
-	const [times, setTimes] = useState(timezoneToTime(convertTimezone()));
+	const CLOCK_PER_PAGE = 8;
+	const [state, setState] = useState(shuffle(timezones));
+	const [limit, setLimit] = useState(CLOCK_PER_PAGE);
+	const [times, setTimes] = useState(timezoneToTime(convertTimezone(limit, state)));
 
-	useEffect(() => {
-		setInterval(() => {
-			const timer = setTimes(timezoneToTime(times));
+	// console.log(times);
 
-			return function () {
-				clearInterval(timer);
-			};
-		}, 1000);
-	}, []);
+	// useEffect(() => {
+	// 	setInterval(() => {
+	// 		const timer = setTimes(timezoneToTime(convertTimezone(limit, state)));
+
+	// 		return function () {
+	// 			clearInterval(timer);
+	// 		};
+	// 	}, 1000);
+	// }, []);
+
+	function onLimitChange(limit) {
+		setLimit(limit);
+		setState(state);
+		setTimes(timezoneToTime(convertTimezone(limit, state)));
+	}
 
 	return (
 		<>
-			<div className="search"></div>
+			<Search />
 			<div className="clocks">
 				{times.map((time) => {
-					return <Clock key={time.name.name} data={time} />;
+					return <Clock key={time.name} data={time} />;
 				})}
-				{/* <Clock key={times[0].id} data={times[0]} /> */}
 			</div>
+			<LoadMore onClick={onLimitChange} limit={limit} cpp={CLOCK_PER_PAGE} />
 		</>
 	);
 }
 
 render(<App />, document.querySelector('#app'));
+
+/**
+ * TODOS
+ *
+ * Use pixabay API from images (use this only when clicked on a clock)
+ * Use flag api (with cities code)
+ * USe load more feature (load only 8 clocks per 8 clocks)
+ */

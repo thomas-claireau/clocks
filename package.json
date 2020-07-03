@@ -12,7 +12,9 @@
 	"dependencies": {
 		"city-timezones": "^1.2.0",
 		"dotenv": "^8.2.0",
+		"lodash.shuffle": "^4.2.0",
 		"react": "^16.13.1",
-		"react-dom": "^16.13.1"
+		"react-dom": "^16.13.1",
+		"utils": "^0.3.1"
 	}
 }
