@@ -3,6 +3,7 @@ import { render } from 'react-dom';
 import datas from './assets/timezone.json';
 import countries from './assets/countries.json';
 import cityTimeZones from 'city-timezones';
+require('dotenv').config();
 
 function offsetToTime(offset) {
 	let date = new Date();
@@ -12,7 +13,9 @@ function offsetToTime(offset) {
 }
 
 function timezoneToTime(data) {
-	data.forEach((item) => {
+	data = [...data];
+
+	data.forEach((item, key) => {
 		item.time = offsetToTime(item.offset);
 	});
 
@@ -25,11 +28,14 @@ function convertTimezone() {
 	datas.forEach((data, index) => {
 		const utc = convertUtc(data.utc);
 
+		if (index == 10) console.log(data);
+
 		if (Array.isArray(utc) && utc.length > 0) {
 			res.push({
 				id: index,
 				utc,
 				offset: data.offset,
+				time: null,
 			});
 		}
 	});
@@ -68,12 +74,11 @@ function Clock({ data }) {
 }
 
 function App() {
-	const [clocks, setClocks] = useState(convertTimezone());
-	const [times, setTimes] = useState(timezoneToTime(clocks));
+	const [times, setTimes] = useState(timezoneToTime(convertTimezone()));
 
 	useEffect(() => {
 		setInterval(() => {
-			const timer = setTimes(timezoneToTime(clocks));
+			const timer = setTimes(timezoneToTime(times));
 
 			return function () {
 				clearInterval(timer);
@@ -85,7 +90,7 @@ function App() {
 		<>
 			<div className="search"></div>
 			<div className="clocks">
-				{times.map((time) => {
+				{times.map((time, index) => {
 					return <Clock key={time.id} data={time} />;
 				})}
 			</div>
