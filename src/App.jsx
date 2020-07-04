@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { render } from 'react-dom';
 import timezones from './assets/timezone.json';
-import shuffle from 'lodash.shuffle';
 require('dotenv').config();
+
+import './App.scss';
 
 // Utils
 import { timezoneToTime, convertTimezone } from './utils';
@@ -13,7 +14,7 @@ import { LoadMore } from './components/LoadMore/LoadMore';
 import { Search } from './components/Search/Search';
 
 function App() {
-	const CLOCK_PER_PAGE = 8;
+	const CLOCK_PER_PAGE = 1;
 	const [limit, setLimit] = useState(CLOCK_PER_PAGE);
 	const [state, setState] = useState(null);
 
@@ -58,7 +59,7 @@ function App() {
 		<>
 			<Search />
 			{state && <Clocks datas={state} />}
-			<LoadMore onClick={onLimitChange} limit={limit} step={CLOCK_PER_PAGE} />
+			{/* <LoadMore onClick={onLimitChange} limit={limit} step={CLOCK_PER_PAGE} /> */}
 		</>
 	);
 }

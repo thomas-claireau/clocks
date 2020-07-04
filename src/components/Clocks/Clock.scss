@@ -1,0 +1,45 @@
+.clock {
+	position: relative;
+	width: 400px;
+	height: 400px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border: 2px solid #fff;
+	border-radius: 100%;
+
+	> div {
+		$rotate: var(--rotate);
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%) rotateZ($rotate);
+		background-color: transparent;
+
+		&.seconds {
+			width: 80%;
+			height: 2px;
+		}
+
+		&.minutes {
+			width: 90%;
+			height: 4px;
+		}
+
+		&.hours {
+			width: 50%;
+			height: 5px;
+		}
+
+		&:before {
+			content: '';
+			width: 50%;
+			height: 100%;
+			position: absolute;
+			top: 0;
+			left: 0;
+			background-color: #fff;
+			border-radius: 30px;
+		}
+	}
+}

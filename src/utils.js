@@ -4,7 +4,7 @@ function offsetToTime(offset) {
 	let date = new Date();
 	date = new Date(date.setHours(date.getHours() + offset));
 
-	return date.toLocaleTimeString('fr-FR');
+	return date;
 }
 
 export function timezoneToTime(data) {
@@ -21,8 +21,6 @@ export function convertTimezone(limit, datas) {
 	const res = [];
 	const names = [];
 	let i = 0;
-
-	console.log('passe');
 
 	datas.forEach((data) => {
 		data.utc.forEach((item) => {
