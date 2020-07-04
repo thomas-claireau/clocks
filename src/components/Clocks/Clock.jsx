@@ -1,4 +1,5 @@
 import React from 'react';
+import './Clock.scss';
 
 export function Clock({ data }) {
 	return (

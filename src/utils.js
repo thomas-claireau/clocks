@@ -22,6 +22,8 @@ export function convertTimezone(limit, datas) {
 	const names = [];
 	let i = 0;
 
+	console.log('passe');
+
 	datas.forEach((data) => {
 		data.utc.forEach((item) => {
 			if (i < limit) {
