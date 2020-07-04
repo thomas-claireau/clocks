@@ -36,7 +36,6 @@ function Minute({ data }) {
 }
 
 function Hour({ hours, minutes }) {
-	console.log(hours, minutes);
 	const calc = hours * 30 + minutes * 2;
 	const data = { time: calc, transitionOff: calc == 90 };
 
@@ -60,6 +59,10 @@ export function Clock({ data }) {
 				<Second data={data.time.getSeconds()} />
 				<Minute data={data.time.getMinutes()} />
 				<Hour hours={data.time.getHours()} minutes={data.time.getMinutes()} />
+				<div className="infos">
+					<div className="name">{data.name}</div>
+					<div className="time">{data.time.toLocaleTimeString()}</div>
+				</div>
 			</>
 		);
 	}

@@ -1,14 +1,21 @@
 .clock {
 	position: relative;
-	width: 400px;
-	height: 400px;
+	min-width: 150px;
+	width: 150px;
+	height: 150px;
 	display: flex;
 	justify-content: center;
+	margin-top: 120px;
 	align-items: center;
 	border: 2px solid #fff;
 	border-radius: 100%;
+	cursor: pointer;
 
-	> div {
+	&:not(:first-child) {
+		margin-left: 20px;
+	}
+
+	> div:not(.infos) {
 		$rotate: var(--rotate);
 		position: absolute;
 		top: 50%;
@@ -41,5 +48,18 @@
 			background-color: #fff;
 			border-radius: 30px;
 		}
+	}
+
+	> div.infos {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+		position: absolute;
+		bottom: -80px;
+		left: 50%;
+		transform: translateX(-50%);
+		color: #fff;
+		font-size: 20px;
 	}
 }

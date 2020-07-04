@@ -14,7 +14,7 @@ import { LoadMore } from './components/LoadMore/LoadMore';
 import { Search } from './components/Search/Search';
 
 function App() {
-	const CLOCK_PER_PAGE = 1;
+	const CLOCK_PER_PAGE = 13;
 	const [limit, setLimit] = useState(CLOCK_PER_PAGE);
 	const [state, setState] = useState(null);
 
@@ -59,7 +59,7 @@ function App() {
 		<>
 			<Search />
 			{state && <Clocks datas={state} />}
-			{/* <LoadMore onClick={onLimitChange} limit={limit} step={CLOCK_PER_PAGE} /> */}
+			<LoadMore onClick={onLimitChange} limit={limit} step={CLOCK_PER_PAGE} />
 		</>
 	);
 }
@@ -69,7 +69,7 @@ render(<App />, document.querySelector('#app'));
 /**
  * TODOS
  *
+ * Mettre en place la recherche de timezone
  * Use pixabay API from images (use this only when clicked on a clock)
  * Use flag api (with cities code)
- * USe load more feature (load only 8 clocks per 8 clocks)
  */

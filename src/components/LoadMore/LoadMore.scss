@@ -1,2 +1,24 @@
 .load-more {
+	font-family: Montserrat;
+	margin: 120px auto 80px auto;
+	-webkit-appearance: none;
+	border: 2px solid #fff;
+	color: #fff;
+	background-color: transparent;
+	transition: all 0.3s ease-in-out;
+	padding: 10px 25px;
+	border-radius: 30px;
+	font-size: 20px;
+	cursor: pointer;
+
+	&:focus,
+	&:hover {
+		outline: 0;
+	}
+
+	&:hover {
+		background-color: #fff;
+		color: #000;
+		transition: all 0.3s ease-in-out;
+	}
 }
