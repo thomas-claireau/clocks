@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { render } from 'react-dom';
+import shuffle from 'lodash.shuffle';
 import timezones from './assets/timezone.json';
 require('dotenv').config();
 
 import './App.scss';
 
 // Utils
-import { timezoneToTime, convertTimezone } from './utils';
+import { timezoneToTime, convertTimezone, filterTimezone } from './utils';
 
 // Components
 import { Clocks } from './components/Clocks/Clocks';
@@ -17,13 +18,16 @@ function App() {
 	const CLOCK_PER_PAGE = 13;
 	const [limit, setLimit] = useState(CLOCK_PER_PAGE);
 	const [state, setState] = useState(null);
+	const [search, setSearch] = useState('');
 
-	function save(limit) {
-		const data = convertTimezone(limit, timezones);
+	function save() {
+		const data = convertTimezone(shuffle(timezones));
+		const limitData = timezoneToTime(data, limit);
 
 		sessionStorage.setItem('datas', JSON.stringify(data));
+		sessionStorage.setItem('limitData', JSON.stringify(limitData));
 
-		return data;
+		return limitData;
 	}
 
 	function onLimitChange(limit) {
@@ -31,13 +35,17 @@ function App() {
 		setLimit(limit);
 	}
 
-	// when load more clicked
+	function onSearchChange(search) {
+		filterTimezone(search, limit, timezones);
+	}
+
+	// when page load and load more clicked
 	useEffect(() => {
-		let data = JSON.parse(sessionStorage.getItem('datas'));
+		let data = JSON.parse(sessionStorage.getItem('limitData'));
 		const limitClock = Number(sessionStorage.getItem('limit')) || limit;
 
-		if (!data || data === '[]' || limitClock !== 8) {
-			data = save(limitClock);
+		if (!data || data === '[]' || limitClock !== CLOCK_PER_PAGE) {
+			data = save();
 		}
 
 		setState(timezoneToTime(data));
@@ -57,7 +65,7 @@ function App() {
 
 	return (
 		<>
-			<Search />
+			<Search onChange={onSearchChange} />
 			{state && <Clocks datas={state} />}
 			<LoadMore onClick={onLimitChange} limit={limit} step={CLOCK_PER_PAGE} />
 		</>

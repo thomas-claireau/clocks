@@ -7,8 +7,16 @@ function offsetToTime(offset) {
 	return date;
 }
 
-export function timezoneToTime(data) {
-	data = [...data];
+export function timezoneToTime(data, limit = false) {
+	if (limit) {
+		data = data.filter((item, index) => {
+			if (index <= limit) return index;
+		});
+	} else {
+		data = [...data];
+	}
+
+	console.log(data);
 
 	data.forEach((item, key) => {
 		item.time = offsetToTime(item.offset);
@@ -17,35 +25,42 @@ export function timezoneToTime(data) {
 	return data;
 }
 
-export function convertTimezone(limit, datas) {
+export function convertTimezone(datas) {
 	const res = [];
 	const names = [];
-	let i = 0;
+
+	console.log('passe');
 
 	datas.forEach((data) => {
 		data.utc.forEach((item) => {
-			if (i < limit) {
-				item = convertUtc(item);
+			item = convertUtc(item);
 
-				if (item) {
-					if (!names.includes(item.name)) {
-						names.push(item.name);
+			if (item) {
+				if (!names.includes(item.name)) {
+					names.push(item.name);
 
-						res.push({
-							id: item.name.toLowerCase(),
-							name: item.name,
-							offset: data.offset,
-							time: null,
-						});
-
-						i++;
-					}
+					res.push({
+						id: item.name.toLowerCase(),
+						name: item.name,
+						offset: data.offset,
+						time: null,
+					});
 				}
 			}
 		});
 	});
 
 	return res;
+}
+
+export function filterTimezone(search, limit, datas) {
+	console.log(search);
+	console.log(limit);
+	console.log(datas);
+
+	// datas = datas.filter((item) => {
+
+	// })
 }
 
 function convertUtc(utc) {
