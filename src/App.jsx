@@ -69,7 +69,7 @@ function App() {
 		<div style={{ color: 'white' }}>
 			<Search onChange={onSearchChange} />
 			{time && <Clocks datas={time} />}
-			{reduceState && reduceState.length == limit && (
+			{time && time.length == limit && (
 				<LoadMore onClick={onLimitChange} limit={limit} step={CLOCK_PER_PAGE} />
 			)}
 		</div>

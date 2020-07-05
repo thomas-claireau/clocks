@@ -3,20 +3,12 @@ import moment from 'moment';
 import momentTimezone from 'moment-timezone';
 
 export function getTime(datas) {
-	const res = [];
+	return datas.filter((data) => {
+		moment.tz.setDefault(data.id);
+		data.time = moment(momentTimezone().tz(data.id));
 
-	datas.forEach((data) => {
-		moment.tz.setDefault(data);
-		const time = moment(momentTimezone().tz(data));
-
-		res.push({
-			id: data.toLowerCase(),
-			name: getNameOfTimezone(data),
-			time: time,
-		});
+		return data;
 	});
-
-	return res;
 }
 
 function getNameOfTimezone(timezone) {
@@ -32,19 +24,19 @@ export function filterTimezone(search, datas) {
 }
 
 export function limitDatas(datas, limit) {
-	if (datas.length > limit) {
-		return datas.filter((item, index) => {
-			if (index <= limit) return index;
+	return datas
+		.filter((item, index) => index < limit)
+		.map((item) => {
+			const name = getNameOfTimezone(item);
+
+			return {
+				id: item,
+				name: name,
+				time: null,
+			};
 		});
-	} else {
-		return datas;
-	}
 }
 
 export function cleanData(datas) {
 	return datas.filter((item) => item.includes('/') && !item.includes('Etc'));
-}
-
-function setCountryCode(utc) {
-	return cityTimeZones.lookupViaCity(utc);
 }
