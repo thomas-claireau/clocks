@@ -37,7 +37,7 @@ function Minute({ data }) {
 }
 
 function Hour({ hours, minutes }) {
-	const calc = hours * 30 + minutes * 2;
+	const calc = hours * 30 + minutes * 2 + 30;
 	const data = { time: calc, transitionOff: calc == 90 };
 
 	return (
