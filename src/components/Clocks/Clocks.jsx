@@ -3,7 +3,6 @@ import { Clock } from './Clock';
 import './Clocks.scss';
 
 export function Clocks({ datas }) {
-	console.log(datas);
 	return (
 		<div className="clocks">
 			{datas.map((data) => {
