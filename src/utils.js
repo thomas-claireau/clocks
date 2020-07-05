@@ -8,15 +8,9 @@ function offsetToTime(offset) {
 }
 
 export function timezoneToTime(data, limit = false) {
-	if (limit) {
-		data = data.filter((item, index) => {
-			if (index <= limit) return index;
-		});
-	} else {
-		data = [...data];
-	}
+	data = [...data];
 
-	console.log(data);
+	// console.log(data);
 
 	data.forEach((item, key) => {
 		item.time = offsetToTime(item.offset);
@@ -53,14 +47,20 @@ export function convertTimezone(datas) {
 	return res;
 }
 
-export function filterTimezone(search, limit, datas) {
-	console.log(search);
-	console.log(limit);
-	console.log(datas);
+export function filterTimezone(search, datas) {
+	search = search.toLowerCase();
 
-	// datas = datas.filter((item) => {
+	return datas.filter((item) => item.id.includes(search));
+}
 
-	// })
+export function limitDatas(datas, limit) {
+	if (datas.length > limit) {
+		return datas.filter((item, index) => {
+			if (index <= limit) return index;
+		});
+	} else {
+		return datas;
+	}
 }
 
 function convertUtc(utc) {

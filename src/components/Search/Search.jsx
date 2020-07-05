@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import './Search.scss';
 import SVG from 'react-inlinesvg';
 
-export function Search() {
+export function Search({ onChange }) {
 	const [state, setState] = useState('');
 
 	function handleChange(e) {
 		setState(e.target.value);
+		onChange(e.target.value);
 	}
 
 	return (

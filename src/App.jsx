@@ -7,7 +7,7 @@ require('dotenv').config();
 import './App.scss';
 
 // Utils
-import { timezoneToTime, convertTimezone, filterTimezone } from './utils';
+import { limitDatas, timezoneToTime, convertTimezone, filterTimezone } from './utils';
 
 // Components
 import { Clocks } from './components/Clocks/Clocks';
@@ -18,16 +18,22 @@ function App() {
 	const CLOCK_PER_PAGE = 13;
 	const [limit, setLimit] = useState(CLOCK_PER_PAGE);
 	const [state, setState] = useState(null);
-	const [search, setSearch] = useState('');
 
-	function save() {
-		const data = convertTimezone(shuffle(timezones));
-		const limitData = timezoneToTime(data, limit);
+	function save(filteredDatas = false) {
+		const saveDatas = JSON.parse(sessionStorage.getItem('datas'));
+		let datas;
 
-		sessionStorage.setItem('datas', JSON.stringify(data));
-		sessionStorage.setItem('limitData', JSON.stringify(limitData));
+		if (!saveDatas && saveDatas !== '[]') {
+			datas = convertTimezone(shuffle(timezones));
+		} else if (filteredDatas) {
+			datas = filteredDatas;
+		} else {
+			datas = saveDatas;
+		}
 
-		return limitData;
+		sessionStorage.setItem('datas', JSON.stringify(datas));
+
+		return datas;
 	}
 
 	function onLimitChange(limit) {
@@ -36,7 +42,10 @@ function App() {
 	}
 
 	function onSearchChange(search) {
-		filterTimezone(search, limit, timezones);
+		let datas = JSON.parse(sessionStorage.getItem('datas'));
+		datas = filterTimezone(search, datas);
+		datas = limitDatas(datas, limit);
+		setState(timezoneToTime(datas));
 	}
 
 	// when page load and load more clicked
@@ -48,7 +57,7 @@ function App() {
 			data = save();
 		}
 
-		setState(timezoneToTime(data));
+		setState(limitDatas(timezoneToTime(data), limitClock));
 		setLimit(limitClock);
 	}, [limit]);
 
@@ -67,7 +76,9 @@ function App() {
 		<>
 			<Search onChange={onSearchChange} />
 			{state && <Clocks datas={state} />}
-			<LoadMore onClick={onLimitChange} limit={limit} step={CLOCK_PER_PAGE} />
+			{state && state.length == limit && (
+				<LoadMore onClick={onLimitChange} limit={limit} step={CLOCK_PER_PAGE} />
+			)}
 		</>
 	);
 }
@@ -79,5 +90,5 @@ render(<App />, document.querySelector('#app'));
  *
  * Mettre en place la recherche de timezone
  * Use pixabay API from images (use this only when clicked on a clock)
- * Use flag api (with cities code)
+ * Use flag api (with cities code) -> border-image
  */
