@@ -1,12 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Search.scss';
 import SVG from 'react-inlinesvg';
 
 export function Search() {
+	const [state, setState] = useState('');
+
+	function handleChange(e) {
+		setState(e.target.value);
+	}
+
 	return (
 		<div className="search">
 			<SVG src={require('./earth.svg')} />
-			<input type="text" placeholder="Search city..." />
+			<input type="text" value={state} onChange={handleChange} placeholder="Search city..." />
 		</div>
 	);
 }
