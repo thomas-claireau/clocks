@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router';
 import moment from 'moment';
 import './Clock.scss';
 
@@ -37,7 +38,7 @@ function Minute({ data }) {
 }
 
 function Hour({ hours, minutes }) {
-	const calc = hours * 30 + minutes * 2 + 30;
+	const calc = hours * 30 + 90 + (minutes / 360) * 30;
 	const data = { time: calc, transitionOff: calc == 90 };
 
 	return (
@@ -54,21 +55,17 @@ function Hour({ hours, minutes }) {
 }
 
 export function Clock({ data }) {
-	function getNeedle() {
-		const time = moment(data.time);
+	const time = moment(data.time);
 
-		return (
-			<>
-				<Second data={time.format('ss')} />
-				<Minute data={time.format('mm')} />
-				<Hour hours={time.format('HH')} minutes={time.format('mm')} />
-				<div className="infos">
-					<div className="name">{data.name}</div>
-					<div className="time">{time.format('HH:mm:ss')}</div>
-				</div>
-			</>
-		);
-	}
-
-	return <div className={`clock ${data.name.toLowerCase()}`}>{getNeedle()}</div>;
+	return (
+		<>
+			<Second data={time.format('ss')} />
+			<Minute data={time.format('mm')} />
+			<Hour hours={time.format('HH')} minutes={time.format('mm')} />
+			<div className="infos">
+				<div className="name">{data.name}</div>
+				<div className="time">{time.format('HH:mm:ss')}</div>
+			</div>
+		</>
+	);
 }

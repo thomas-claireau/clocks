@@ -1,87 +1,68 @@
 import React, { useState, useEffect } from 'react';
 import { render } from 'react-dom';
-import shuffle from 'lodash.shuffle';
-import momentTimezone from 'moment-timezone';
+import { BrowserRouter as Router, Switch, Route, Redirect, withRouter } from 'react-router-dom';
+import { spring, AnimatedSwitch } from 'react-router-transition';
 
-require('dotenv').config();
+import Home from './Home';
+import ClockDetail from './components/Clocks/ClockDetail';
 
 import './App.scss';
 
-// Utils
-import { limitDatas, getTime, filterTimezone, cleanData } from './utils';
+require('dotenv').config();
 
-// Components
-import { Clocks } from './components/Clocks/Clocks';
-import { LoadMore } from './components/LoadMore/LoadMore';
-import { Search } from './components/Search/Search';
-
-function App() {
-	const CLOCK_PER_PAGE = 13;
-	const [limit, setLimit] = useState(null);
-	const [state, setState] = useState(null);
-	const [reduceState, setReduceState] = useState(null);
-	const [time, setTime] = useState(null);
-	const [search, setSearch] = useState(null);
-
-	// only on load
-	useEffect(() => {
-		let datas = shuffle(momentTimezone.tz.names()); // get timezones
-		datas = cleanData(datas); // clean useless timezones
-
-		setState(datas);
-		setLimit(CLOCK_PER_PAGE);
-	}, []);
-
-	// on load and on limit changed
-	useEffect(() => {
-		if (state && limit) {
-			if (!search) {
-				setReduceState(limitDatas(state, limit));
-			} else {
-				const datas = filterTimezone(search, state);
-				setReduceState(limitDatas(datas, limit));
-			}
-		}
-	}, [limit, search]);
-
-	// then, get times of reduce state infos when reducteState is OK and every seconds
-	useEffect(() => {
-		if (reduceState) {
-			const timer = setInterval(() => {
-				setTime(getTime(reduceState));
-			}, 1000);
-
-			return function () {
-				clearInterval(timer);
-			};
-		}
-	}, [reduceState]);
-
-	function onLimitChange(limit) {
-		setLimit(limit);
-	}
-
-	function onSearchChange(search) {
-		setSearch(search);
-	}
-
-	return (
-		<div style={{ color: 'white' }}>
-			<Search onChange={onSearchChange} />
-			{time && <Clocks datas={time} />}
-			{time && time.length == limit && (
-				<LoadMore onClick={onLimitChange} limit={limit} step={CLOCK_PER_PAGE} />
-			)}
-		</div>
-	);
+// we need to map the `scale` prop we define below
+// to the transform style property
+function mapStyles(styles) {
+	return {
+		opacity: styles.opacity,
+		transform: `scale(${styles.scale})`,
+	};
 }
 
-render(<App />, document.querySelector('#app'));
+// wrap the `spring` helper to use a bouncy config
+function bounce(val) {
+	return spring(val, {
+		stiffness: 330,
+		damping: 22,
+	});
+}
 
-/**
- * TODOS
- *
- * Mettre en place la recherche de timezone
- * Use pixabay API from images (use this only when clicked on a clock)
- * Use flag api (with cities code) -> border-image
- */
+// child matches will...
+const bounceTransition = {
+	// start in a transparent, upscaled state
+	atEnter: {
+		opacity: 0,
+		scale: 1.2,
+	},
+	// leave in a transparent, downscaled state
+	atLeave: {
+		opacity: bounce(0),
+		scale: bounce(0.8),
+	},
+	// and rest at an opaque, normally-scaled state
+	atActive: {
+		opacity: bounce(1),
+		scale: bounce(1),
+	},
+};
+
+render(
+	<Router>
+		<Switch>
+			<AnimatedSwitch
+				atEnter={bounceTransition.atEnter}
+				atLeave={bounceTransition.atLeave}
+				atActive={bounceTransition.atActive}
+				mapStyles={mapStyles}
+				className="route-wrapper"
+			>
+				<Route path="/clock/:id" component={withRouter(ClockDetail)} />
+				<Route exact path="/" component={withRouter(Home)} />
+				<Route path="*">
+					<Redirect to="/" />
+				</Route>
+			</AnimatedSwitch>
+		</Switch>
+	</Router>,
+	document.getElementById('app')
+);

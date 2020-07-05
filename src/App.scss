@@ -26,3 +26,11 @@ body {
 	margin-right: auto;
 	margin-left: auto;
 }
+
+.route-wrapper {
+	position: relative;
+}
+
+.route-wrapper > div {
+	position: absolute;
+}

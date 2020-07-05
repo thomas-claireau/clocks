@@ -1,4 +1,3 @@
-import cityTimeZones from 'city-timezones';
 import moment from 'moment';
 import momentTimezone from 'moment-timezone';
 
