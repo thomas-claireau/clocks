@@ -1,2 +1,46 @@
+@import '../../vars';
+
 .search {
+	position: relative;
+	width: 400px;
+	height: 50px;
+	padding: 0 50px 0 20px;
+	margin: 40px auto -40px auto;
+	border: 2px solid #fff;
+	border-radius: 30px;
+
+	@media screen and (max-width: $break-tablet) {
+		width: 300px;
+		margin: 40px auto 60px auto;
+	}
+
+	svg {
+		width: 35px;
+		height: 35px;
+		position: absolute;
+		top: 50%;
+		right: 10px;
+		transform: translateY(-50%);
+		fill: #fff;
+	}
+
+	input {
+		width: 100%;
+		height: 100%;
+		border: none;
+		background-color: transparent;
+		-webkit-appearance: none;
+		color: #fff;
+		font-size: 20px;
+		font-family: Montserrat;
+
+		&:hover,
+		&:focus {
+			outline: 0;
+		}
+
+		&::placeholder {
+			color: #fff;
+		}
+	}
 }

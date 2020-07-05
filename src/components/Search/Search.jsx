@@ -1,10 +1,12 @@
 import React from 'react';
 import './Search.scss';
+import SVG from 'react-inlinesvg';
 
 export function Search() {
 	return (
 		<div className="search">
-			<input type="text" placeholder="Search timezone..." />
+			<SVG src={require('./earth.svg')} />
+			<input type="text" placeholder="Search city..." />
 		</div>
 	);
 }
