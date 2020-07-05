@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { render } from 'react-dom';
 import shuffle from 'lodash.shuffle';
-import timezones from './assets/timezone.json';
+import momentTimezone from 'moment-timezone';
+
 require('dotenv').config();
 
 import './App.scss';
 
 // Utils
-import { limitDatas, timezoneToTime, convertTimezone, filterTimezone } from './utils';
+import { limitDatas, getTime, filterTimezone, cleanData } from './utils';
 
 // Components
 import { Clocks } from './components/Clocks/Clocks';
@@ -16,70 +17,62 @@ import { Search } from './components/Search/Search';
 
 function App() {
 	const CLOCK_PER_PAGE = 13;
-	const [limit, setLimit] = useState(CLOCK_PER_PAGE);
+	const [limit, setLimit] = useState(null);
 	const [state, setState] = useState(null);
+	const [reduceState, setReduceState] = useState(null);
+	const [time, setTime] = useState(null);
+	const [search, setSearch] = useState(null);
 
-	function save(filteredDatas = false) {
-		const saveDatas = JSON.parse(sessionStorage.getItem('datas'));
-		let datas;
-
-		if (!saveDatas && saveDatas !== '[]') {
-			datas = convertTimezone(shuffle(timezones));
-		} else if (filteredDatas) {
-			datas = filteredDatas;
-		} else {
-			datas = saveDatas;
-		}
-
-		sessionStorage.setItem('datas', JSON.stringify(datas));
-
-		return datas;
-	}
-
-	function onLimitChange(limit) {
-		sessionStorage.setItem('limit', limit);
-		setLimit(limit);
-	}
-
-	function onSearchChange(search) {
-		let datas = JSON.parse(sessionStorage.getItem('datas'));
-		datas = filterTimezone(search, datas);
-		datas = limitDatas(datas, limit);
-		setState(timezoneToTime(datas));
-	}
-
-	// when page load and load more clicked
+	// only on load
 	useEffect(() => {
-		let data = JSON.parse(sessionStorage.getItem('limitData'));
-		const limitClock = Number(sessionStorage.getItem('limit')) || limit;
+		let datas = shuffle(momentTimezone.tz.names()); // get timezones
+		datas = cleanData(datas); // clean useless timezones
 
-		if (!data || data === '[]' || limitClock !== CLOCK_PER_PAGE) {
-			data = save();
-		}
+		setState(datas);
+		setLimit(CLOCK_PER_PAGE);
+	}, []);
 
-		setState(limitDatas(timezoneToTime(data), limitClock));
-		setLimit(limitClock);
-	}, [limit]);
-
-	// call each seconds
+	// on load and on limit changed
 	useEffect(() => {
-		setInterval(() => {
-			setState((state) => timezoneToTime(state));
+		if (state && limit) {
+			if (!search) {
+				setReduceState(limitDatas(state, limit));
+			} else {
+				const datas = filterTimezone(search, state);
+				setReduceState(limitDatas(datas, limit));
+			}
+		}
+	}, [limit, search]);
+
+	// then, get times of reduce state infos when reducteState is OK and every seconds
+	useEffect(() => {
+		if (reduceState) {
+			const timer = setInterval(() => {
+				setTime(getTime(reduceState));
+			}, 1000);
 
 			return function () {
 				clearInterval(timer);
 			};
-		}, 1000);
-	}, []);
+		}
+	}, [reduceState]);
+
+	function onLimitChange(limit) {
+		setLimit(limit);
+	}
+
+	function onSearchChange(search) {
+		setSearch(search);
+	}
 
 	return (
-		<>
+		<div style={{ color: 'white' }}>
 			<Search onChange={onSearchChange} />
-			{state && <Clocks datas={state} />}
-			{state && state.length == limit && (
+			{time && <Clocks datas={time} />}
+			{reduceState && reduceState.length == limit && (
 				<LoadMore onClick={onLimitChange} limit={limit} step={CLOCK_PER_PAGE} />
 			)}
-		</>
+		</div>
 	);
 }
 

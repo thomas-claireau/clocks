@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment';
 import './Clock.scss';
 
 function Second({ data }) {
@@ -54,14 +55,16 @@ function Hour({ hours, minutes }) {
 
 export function Clock({ data }) {
 	function getNeedle() {
+		const time = moment(data.time);
+
 		return (
 			<>
-				<Second data={data.time.getSeconds()} />
-				<Minute data={data.time.getMinutes()} />
-				<Hour hours={data.time.getHours()} minutes={data.time.getMinutes()} />
+				<Second data={time.format('ss')} />
+				<Minute data={time.format('mm')} />
+				<Hour hours={time.format('HH')} minutes={time.format('mm')} />
 				<div className="infos">
 					<div className="name">{data.name}</div>
-					<div className="time">{data.time.toLocaleTimeString()}</div>
+					<div className="time">{time.format('HH:mm:ss')}</div>
 				</div>
 			</>
 		);

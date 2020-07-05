@@ -13,7 +13,12 @@ export function Search({ onChange }) {
 	return (
 		<div className="search">
 			<SVG src={require('./earth.svg')} />
-			<input type="text" value={state} onChange={handleChange} placeholder="Search city..." />
+			<input
+				type="text"
+				value={state}
+				onChange={handleChange}
+				placeholder="Search place..."
+			/>
 		</div>
 	);
 }

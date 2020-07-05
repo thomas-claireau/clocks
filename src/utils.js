@@ -1,56 +1,34 @@
 import cityTimeZones from 'city-timezones';
+import moment from 'moment';
+import momentTimezone from 'moment-timezone';
 
-function offsetToTime(offset) {
-	let date = new Date();
-	date = new Date(date.setHours(date.getHours() + offset));
-
-	return date;
-}
-
-export function timezoneToTime(data, limit = false) {
-	data = [...data];
-
-	// console.log(data);
-
-	data.forEach((item, key) => {
-		item.time = offsetToTime(item.offset);
-	});
-
-	return data;
-}
-
-export function convertTimezone(datas) {
+export function getTime(datas) {
 	const res = [];
-	const names = [];
-
-	console.log('passe');
 
 	datas.forEach((data) => {
-		data.utc.forEach((item) => {
-			item = convertUtc(item);
+		moment.tz.setDefault(data);
+		const time = moment(momentTimezone().tz(data));
 
-			if (item) {
-				if (!names.includes(item.name)) {
-					names.push(item.name);
-
-					res.push({
-						id: item.name.toLowerCase(),
-						name: item.name,
-						offset: data.offset,
-						time: null,
-					});
-				}
-			}
+		res.push({
+			id: data.toLowerCase(),
+			name: getNameOfTimezone(data),
+			time: time,
 		});
 	});
 
 	return res;
 }
 
+function getNameOfTimezone(timezone) {
+	const arrayName = timezone.split('/');
+
+	return arrayName[arrayName.length - 1].replace('_', ' ');
+}
+
 export function filterTimezone(search, datas) {
 	search = search.toLowerCase();
 
-	return datas.filter((item) => item.id.includes(search));
+	return datas.filter((item) => item.toLowerCase().includes(search));
 }
 
 export function limitDatas(datas, limit) {
@@ -63,18 +41,8 @@ export function limitDatas(datas, limit) {
 	}
 }
 
-function convertUtc(utc) {
-	if (!utc.includes('/') || utc.includes('Etc')) return;
-
-	const name = utc.split('/')[1];
-
-	if (!name) return;
-
-	const code = setCountryCode(name);
-
-	if (!code || !Array.isArray(code) || code.length == 0) return;
-
-	return { name, code };
+export function cleanData(datas) {
+	return datas.filter((item) => item.includes('/') && !item.includes('Etc'));
 }
 
 function setCountryCode(utc) {
