@@ -61,6 +61,7 @@
 	}
 
 	> div.infos {
+		width: fit-content;
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -70,6 +71,6 @@
 		left: 50%;
 		transform: translateX(-50%);
 		color: #fff;
-		font-size: 20px;
+		font-size: 18px;
 	}
 }
