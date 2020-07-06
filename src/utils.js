@@ -4,7 +4,7 @@ import momentTimezone from 'moment-timezone';
 export function getTime(datas) {
 	return datas.filter((data) => {
 		moment.tz.setDefault(data.id);
-		data.time = moment(momentTimezone().tz(data.id));
+		data.time = moment(momentTimezone().tz(data.momentId));
 
 		return data;
 	});
@@ -22,14 +22,17 @@ export function filterTimezone(search, datas) {
 	return datas.filter((item) => item.toLowerCase().includes(search));
 }
 
-export function limitDatas(datas, limit) {
+export function limitDatas(datas, limit = false) {
+	if (!limit) limit = datas.length;
+
 	return datas
 		.filter((item, index) => index < limit)
 		.map((item) => {
 			const name = getNameOfTimezone(item);
 
 			return {
-				id: item,
+				id: name.toLowerCase(),
+				momentId: item,
 				name: name,
 				time: null,
 			};

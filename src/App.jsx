@@ -1,67 +1,98 @@
 import React, { useState, useEffect } from 'react';
 import { render } from 'react-dom';
-import { BrowserRouter as Router, Switch, Route, Redirect, withRouter } from 'react-router-dom';
-import { spring, AnimatedSwitch } from 'react-router-transition';
+import {
+	BrowserRouter as Router,
+	Switch,
+	Route,
+	Redirect,
+	withRouter,
+	useParams,
+} from 'react-router-dom';
 
-import Home from './Home';
+import shuffle from 'lodash.shuffle';
+import momentTimezone from 'moment-timezone';
+
+// Utils
+import { limitDatas, getTime, filterTimezone, cleanData } from './utils';
+
+// Components
+import { Clocks } from './components/Clocks/Clocks';
+import { LoadMore } from './components/LoadMore/LoadMore';
+import { Search } from './components/Search/Search';
 import ClockDetail from './components/Clocks/ClockDetail';
 
 import './App.scss';
 
-require('dotenv').config();
+export function App() {
+	const CLOCK_PER_PAGE = 13;
+	const [limit, setLimit] = useState();
+	const [state, setState] = useState();
+	const [reduceState, setReduceState] = useState();
+	const [time, setTime] = useState();
+	const [search, setSearch] = useState();
 
-// we need to map the `scale` prop we define below
-// to the transform style property
-function mapStyles(styles) {
-	return {
-		opacity: styles.opacity,
-		transform: `scale(${styles.scale})`,
-	};
+	// only on load
+	useEffect(() => {
+		let datas = shuffle(momentTimezone.tz.names()); // get timezones
+		datas = cleanData(datas); // clean useless timezones
+
+		setState(datas);
+		setLimit(CLOCK_PER_PAGE);
+	}, []);
+
+	// on load and on limit changed
+	useEffect(() => {
+		if (state && limit) {
+			let datas = state;
+
+			if (search) {
+				datas = filterTimezone(search, state);
+			}
+
+			setReduceState(limitDatas(datas, limit));
+		}
+	}, [limit, search]);
+
+	// then, get times of reduce state infos when reducteState is OK and every seconds
+	useEffect(() => {
+		if (reduceState) {
+			const timer = setInterval(() => {
+				setTime(getTime(reduceState));
+			}, 1000);
+
+			return function () {
+				clearInterval(timer);
+			};
+		}
+	}, [reduceState]);
+
+	function onLimitChange(limit) {
+		setLimit(limit);
+	}
+
+	function onSearchChange(search) {
+		setSearch(search);
+	}
+
+	return (
+		<div id="home">
+			<Search onChange={onSearchChange} />
+			{time && <Clocks datas={time} />}
+			{time && time.length == limit && (
+				<LoadMore onClick={onLimitChange} limit={limit} step={CLOCK_PER_PAGE} />
+			)}
+		</div>
+	);
 }
-
-// wrap the `spring` helper to use a bouncy config
-function bounce(val) {
-	return spring(val, {
-		stiffness: 330,
-		damping: 22,
-	});
-}
-
-// child matches will...
-const bounceTransition = {
-	// start in a transparent, upscaled state
-	atEnter: {
-		opacity: 0,
-		scale: 1.2,
-	},
-	// leave in a transparent, downscaled state
-	atLeave: {
-		opacity: bounce(0),
-		scale: bounce(0.8),
-	},
-	// and rest at an opaque, normally-scaled state
-	atActive: {
-		opacity: bounce(1),
-		scale: bounce(1),
-	},
-};
 
 render(
 	<Router>
 		<Switch>
-			<AnimatedSwitch
-				atEnter={bounceTransition.atEnter}
-				atLeave={bounceTransition.atLeave}
-				atActive={bounceTransition.atActive}
-				mapStyles={mapStyles}
-				className="route-wrapper"
-			>
-				<Route path="/clock/:id" component={withRouter(ClockDetail)} />
-				<Route exact path="/" component={withRouter(Home)} />
-				<Route path="*">
-					<Redirect to="/" />
-				</Route>
-			</AnimatedSwitch>
+			<Route path="/clock/:id" render={(props) => <ClockDetail {...props} />} />
+			<Route exact path="/" component={App} />
+			<Route path="*">
+				<Redirect to="/" />
+			</Route>
 		</Switch>
 	</Router>,
 	document.getElementById('app')
