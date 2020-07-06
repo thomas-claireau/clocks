@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import './ClockDetail.scss';
 import momentTimezone from 'moment-timezone';
-import { limitDatas, cleanData, getTime } from '../../utils';
+import { limitDatas, cleanData, getTime } from '../../index';
 
 import { Clock } from './Clock';
-import { App } from '../../App';
+import App from '../../App';
 
 function ClockDetail(props) {
 	const params = useParams();
@@ -20,7 +20,7 @@ function ClockDetail(props) {
 	useEffect(() => {
 		let data;
 		datas.forEach((item) => {
-			if (item.id == id) {
+			if (item.id === id) {
 				data = item;
 			}
 		});
@@ -31,6 +31,7 @@ function ClockDetail(props) {
 		} else {
 			console.log('passe');
 		}
+		// eslint-disable-next-line
 	}, []);
 
 	useEffect(() => {

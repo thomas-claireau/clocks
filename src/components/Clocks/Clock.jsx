@@ -1,11 +1,10 @@
 import React from 'react';
-import { Link } from 'react-router';
 import moment from 'moment';
 import './Clock.scss';
 
 function Second({ data }) {
 	const calc = (data / 60) * 360 + 90;
-	data = { time: calc, transitionOff: calc == 90 };
+	data = { time: calc, transitionOff: calc === 90 };
 
 	return (
 		<div
@@ -22,7 +21,7 @@ function Second({ data }) {
 
 function Minute({ data }) {
 	const calc = (data / 60) * 360 + 90;
-	data = { time: calc, transitionOff: calc == 90 };
+	data = { time: calc, transitionOff: calc === 90 };
 
 	return (
 		<div
@@ -39,7 +38,7 @@ function Minute({ data }) {
 
 function Hour({ hours, minutes }) {
 	const calc = hours * 30 + 90 + (minutes / 360) * 30;
-	const data = { time: calc, transitionOff: calc == 90 };
+	const data = { time: calc, transitionOff: calc === 90 };
 
 	return (
 		<div

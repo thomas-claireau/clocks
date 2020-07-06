@@ -1,29 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { render } from 'react-dom';
-import {
-	BrowserRouter as Router,
-	Switch,
-	Route,
-	Redirect,
-	withRouter,
-	useParams,
-} from 'react-router-dom';
 
 import shuffle from 'lodash.shuffle';
 import momentTimezone from 'moment-timezone';
 
 // Utils
-import { limitDatas, getTime, filterTimezone, cleanData } from './utils';
+import { limitDatas, getTime, filterTimezone, cleanData } from './index';
 
 // Components
 import { Clocks } from './components/Clocks/Clocks';
 import { LoadMore } from './components/LoadMore/LoadMore';
 import { Search } from './components/Search/Search';
-import ClockDetail from './components/Clocks/ClockDetail';
 
 import './App.scss';
 
-export function App() {
+function App() {
 	const CLOCK_PER_PAGE = 13;
 	const [limit, setLimit] = useState();
 	const [state, setState] = useState();
@@ -51,7 +41,7 @@ export function App() {
 
 			setReduceState(limitDatas(datas, limit));
 		}
-	}, [limit, search]);
+	}, [state, limit, search]);
 
 	// then, get times of reduce state infos when reducteState is OK and every seconds
 	useEffect(() => {
@@ -78,22 +68,11 @@ export function App() {
 		<div id="home">
 			<Search onChange={onSearchChange} />
 			{time && <Clocks datas={time} />}
-			{time && time.length == limit && (
+			{time && time.length === limit && (
 				<LoadMore onClick={onLimitChange} limit={limit} step={CLOCK_PER_PAGE} />
 			)}
 		</div>
 	);
 }
 
-render(
-	<Router>
-		<Switch>
-			<Route path="/clock/:id" render={(props) => <ClockDetail {...props} />} />
-			<Route exact path="/" component={App} />
-			<Route path="*">
-				<Redirect to="/" />
-			</Route>
-		</Switch>
-	</Router>,
-	document.getElementById('app')
-);
+export default App;
