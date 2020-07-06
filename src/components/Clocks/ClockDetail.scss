@@ -45,6 +45,22 @@
 		margin: 0;
 		border-width: 8px;
 
+		@media screen and (max-width: $break-medium) {
+			width: 450px;
+			height: 450px;
+		}
+
+		@media screen and (max-width: $break-tablet) {
+			width: 300px;
+			height: 300px;
+			border-width: 5px;
+		}
+
+		@media screen and (max-width: $break-small) {
+			width: 250px;
+			height: 250px;
+		}
+
 		.infos {
 			display: none;
 		}
