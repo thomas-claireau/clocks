@@ -52,27 +52,23 @@ export function cleanData(datas) {
 	return datas.filter((item) => item.includes('/') && !item.includes('Etc'));
 }
 
-// render(
-// 	<Router>
-// 		<Switch>
-// 			<Route path="/clock/:id" render={(props) => <ClockDetail {...props} />} />
-// 			<Route exact path="/" component={App} />
-// 			<Route path="*">
-// 				<Redirect to="/" />
-// 			</Route>
-// 		</Switch>
-// 	</Router>,
-// 	document.getElementById('app')
-// );
+export function getPublicPath() {
+	if (process.env.NODE_ENV === 'development') return '/';
+
+	return '/clocks-react/';
+}
 
 ReactDOM.render(
 	<React.StrictMode>
 		<Router>
 			<Switch>
-				<Route path="/clock/:id" render={(props) => <ClockDetail {...props} />} />
-				<Route exact path="/" component={App} />
+				<Route
+					path={`${getPublicPath()}clock/:id`}
+					render={(props) => <ClockDetail {...props} />}
+				/>
+				<Route exact path={getPublicPath()} component={App} />
 				<Route path="*">
-					<Redirect to="/" />
+					<Redirect to={getPublicPath()} />
 				</Route>
 			</Switch>
 		</Router>

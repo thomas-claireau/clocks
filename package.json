@@ -22,7 +22,7 @@
 		"test": "react-scripts test",
 		"eject": "react-scripts eject"
 	},
-	"homepage": "/clocks-react/",
+	"homepage": ".",
 	"eslintConfig": {
 		"extends": "react-app"
 	},

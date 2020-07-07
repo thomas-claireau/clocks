@@ -3,13 +3,15 @@ import { Link } from 'react-router-dom';
 import { Clock } from './Clock';
 import './Clocks.scss';
 
+import { getPublicPath } from '../../index';
+
 export function Clocks({ datas }) {
 	return (
 		<div className="clocks">
 			{datas.map((data) => {
 				return (
 					<Link
-						to={`/clock/${data.name.toLowerCase().replace(' ', '')}`}
+						to={`${getPublicPath()}clock/${data.name.toLowerCase().replace(' ', '')}`}
 						key={data.id}
 						className={`clock ${data.name.toLowerCase()}`}
 					>
