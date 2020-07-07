@@ -2,4 +2,5 @@ deployment:
   tasks:
     - export DEPLOYPATH=~/app.thomas-claireau.fr/clocks-react
     - /bin/cp -R * $DEPLOYPATH
+    - /bin/cp -R .htaccess $DEPLOYPATH
     - $DEPLOYPATH/build.sh 2>&1
