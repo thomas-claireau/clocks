@@ -55,7 +55,7 @@ export function cleanData(datas) {
 export function getPublicPath() {
 	if (process.env.NODE_ENV === 'development') return '/';
 
-	return '/clocks-react/';
+	return process.env.PUBLIC_URL || '/react-horloges/';
 }
 
 ReactDOM.render(
